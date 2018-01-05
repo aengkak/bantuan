@@ -1,18 +1,9 @@
 <?php
 class User extends CI_model {
 	public function selectAll() {
-		$level = $this->session->userdata('level');
-		if ($level == "staff") {
-			$status = "1";
-			$this->db->where('status', $status);
-			return $this->db->get('user_supplier')->result();
-		} elseif($level == "supplier") {
-			$supplier_id = $this->session->userdata('supplier_id');
-			$status = "1";
-			$this->db->where('status', $status);
-			$this->db->where('supplier_id', $supplier_id);
-			return $this->db->get('user_supplier')->result();
-		}
+		$status = "1";
+		$this->db->where('status', $status);
+	return $this->db->get('user')->result();
 	}
 	public function json() {
 		$status = 1;
@@ -27,17 +18,40 @@ class User extends CI_model {
 		$username = $this->input->post('username');
 		$password = $this->input->post('password');
 		$akses_id = $this->input->post('akses_id');
+		$divisi_id = $this->input->post('divisi_id');
 		$status = "1";
 
 		$res = implode(",",$akses_id);
+		if($divisi_id != NULL) {
+			$res1 = implode(",",$divisi_id);
+		} else {
+			$res1 = "";
+		}
 		$data = array('username' => $username,'password' => md5($password),
-						'akses_id' => $res, 'status' => $status);
+						'akses_id' => $res, 'divisi_id' => $res1, 'status' => $status);
 		$this->db->insert('user', $data);
+		$this->db->insert_id();
+		
+		date_default_timezone_set('Asia/Jakarta');
+		$date = date('Y-m-d H:i:s');
+		$user_id = $this->session->userdata('user_id');
+		$datalog = array('user_id' => $user_id, 'ket' => "Tambah User"." ".$username, 'tgl' => $date);
+		$this->db->insert('log', $datalog);
 		$this->db->insert_id();
 	}
 	public function delete($id){
 		$this->db->where('id_user', $id);
 		$this->db->update('user', array('status' => "0"));
+		
+		$this->db->where('id_user', $id);
+		$ak = $this->db->get('user')->row();
+		
+		date_default_timezone_set('Asia/Jakarta');
+		$date = date('Y-m-d H:i:s');
+		$user_id = $this->session->userdata('user_id');
+		$datalog = array('user_id' => $user_id, 'ket' => "Delete User"." ".$ak->username, 'tgl' => $date);
+		$this->db->insert('log', $datalog);
+		$this->db->insert_id();
 	}
 	public function edit($id){
 		$this->db->where('id_user', $id);
@@ -48,17 +62,23 @@ class User extends CI_model {
 		$username = $this->input->post('username');
 		$password = $this->input->post('password');
 		$akses_id = $this->input->post('akses_id');
+		$divisi_id = $this->input->post('divisi_id');
 		
+		if($divisi_id != NULL) {
+			$res1 = implode(",",$divisi_id);
+		} else {
+			$res1 = "";
+		}
 		$res = implode(",",$akses_id);
 		$user_id = $this->session->userdata('user_id');
 		if ($password == NULL) {
 			$data = array('username' => $username,
-								'akses_id' => $res);
+								'akses_id' => $res, 'divisi_id' => $res1);
 			$this->db->where('id_user', $id);
 			$this->db->update('user', $data);
 		} else {
 			$data = array('username' => $username,'password' => md5($password),
-								'akses_id' => $res);
+								'akses_id' => $res, 'divisi_id' => $res1);
 			$this->db->where('id_user', $id);
 			$this->db->update('user', $data);
 		}
@@ -66,6 +86,13 @@ class User extends CI_model {
 		if ($user_id == $id) {
 			$this->session->set_userdata('akses_id', $res);
 		}
+		
+		date_default_timezone_set('Asia/Jakarta');
+		$date = date('Y-m-d H:i:s');
+		$user_id = $this->session->userdata('user_id');
+		$datalog = array('user_id' => $user_id, 'ket' => "Update User"." ".$username, 'tgl' => $date);
+		$this->db->insert('log', $datalog);
+		$this->db->insert_id();
 	}
 	public function cekpass() {
 		$user_id = $this->session->userdata('user_id');

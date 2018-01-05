@@ -9,7 +9,7 @@
         <!-- App favicon -->
         <link rel="shortcut icon" href="<?php echo base_url();?>assets/images/favicon.png">
         <!-- App title -->
-        <title>Karunia Travel</title>
+        <title>Faq</title>
 
         <!-- App css -->
         <link href="<?php echo base_url();?>assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />

@@ -1,79 +1,88 @@
 <!-- Page-Title -->
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="page-title-box">
-                            <div class="btn-group pull-right">
-                                <ol class="breadcrumb hide-phone p-0 m-0">
-                                    <li>
-                                        <a href="<?php echo base_url();?>">Beranda</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Post</a>
-                                    </li>
-                                </ol>
-                            </div>
-                            <h4 class="page-title">Post</h4>
-                        </div>
-                    </div>
-                </div>
-                <!-- end page title end breadcrumb -->
-
-
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="card-box table-responsive">
-                            <h4 class="m-t-0 header-title">
-								<b>
-								<a href="<?php echo base_url();?>addpost" class="btn btn-custom waves-effect waves-light m-b-5">
-									<span class="ion-ios7-plus-empty"></span></a>
-								</b>
-							</h4>
-
-                            <table id="datatable" class="display table table-striped table-bordered">
-                                <thead>
-									<tr>
-										<th>Judul</th>
-										<th>User</th>
-										<th>Tanggal</th>
-										<th>Aksi</th>
-									</tr>
-								</thead>
-								<tbody>
-								</tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-				<!-- sample modal content -->
-                            <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                            <h4 class="modal-title" id="myModalLabel">Form</h4>
-                                        </div>
-										<form class="form-horizontal" role="form" id="form">
-                                        <div class="modal-body" id="modalbody">
-                                        </div>
-                                        <div class="modal-footer" id="loading">
-                                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary waves-effect waves-light">Simpan</button>
-                                        </div>
-										</form>
-                                    </div><!-- /.modal-content -->
-                                </div><!-- /.modal-dialog -->
-                            </div><!-- /.modal -->
-
-	<!-- init -->
-        <script src="<?php echo base_url();?>assets/pages/jquery.datatables.init.js"></script>
-	<script type="text/javascript">
-			var table;
- 
+<div class="row">
+   <div class="col-sm-12">
+      <div class="page-title-box">
+         <div class="btn-group pull-right">
+            <ol class="breadcrumb hide-phone p-0 m-0">
+               <li>
+                  <a style="cursor: pointer;" onclick="pindah('pilih');">Beranda</a>
+               </li>
+               <li>
+                  <a href="#">Post</a>
+               </li>
+            </ol>
+         </div>
+         <h4 class="page-title">Post</h4>
+      </div>
+   </div>
+</div>
+<!-- end page title end breadcrumb -->
+<div class="row">
+   <div class="col-sm-12">
+      <div class="card-box table-responsive">
+         <h4 class="m-t-0 header-title">
+            <b>
+            <a href="<?php echo base_url();?>addpost" class="btn btn-custom waves-effect waves-light m-b-5">
+            <span class="ion-ios7-plus-empty"></span></a>
+            </b>
+         </h4>
+         <table id="datatable" class="display table table-striped table-bordered">
+            <thead>
+               <tr>
+                  <th>Judul</th>
+                  <th>User</th>
+                  <th>Tanggal</th>
+                  <th>Aksi</th>
+               </tr>
+            </thead>
+            <tbody>
+			<?php foreach($post as $key) { ?>
+				<tr>
+					<td><?php echo $key->judul;?></td>
+					<td><?php echo $key->username;?></td>
+					<td><?php echo $key->tgl;?></td>
+					<td><a href="<?php echo base_url();?>editpost/<?php echo $key->id_post;?>" class="table-action-btn h3"><i class="mdi mdi-pencil-box-outline text-success"></i></a>
+					<a href="#" onclick="hapus(<?php echo $key->id_post;?>)" class="table-action-btn h3"><i class="mdi mdi-close-box-outline text-danger"></i></a>
+					</td>
+				</tr>
+			<?php } ?>
+            </tbody>
+         </table>
+      </div>
+   </div>
+</div>
+<!-- sample modal content -->
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 class="modal-title" id="myModalLabel">Form</h4>
+         </div>
+         <form class="form-horizontal" role="form" id="form">
+            <div class="modal-body" id="modalbody">
+            </div>
+            <div class="modal-footer" id="loading">
+               <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
+               <button type="submit" class="btn btn-primary waves-effect waves-light">Simpan</button>
+            </div>
+         </form>
+      </div>
+      <!-- /.modal-content -->
+   </div>
+   <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<!-- init -->
+<script src="<?php echo base_url();?>assets/pages/jquery.datatables.init.js"></script>
+<script type="text/javascript">
+   var table;
+   
             $(document).ready(function() {
                 //datatables
-                table = $('#datatable').DataTable({
-					//keys: true,
+				$('#datatable').DataTable();
+                /*table = $('#datatable').DataTable({
+   		//keys: true,
                     "processing": true, //Feature control the processing indicator.
                     "serverSide": true, //Feature control DataTables' server-side processing mode.
                     "order": [], //Initial no order.
@@ -85,16 +94,16 @@
                     //Set column definition initialisation properties.
                     "columns": [
                         {"data": "judul"},
-						{"data": "username"},
-						{"data": "tgl"},
-						{"data": "action"}
+   			{"data": "username"},
+   			{"data": "tgl"},
+   			{"data": "action"}
                     ],
- 
+   
                 });
-				//TableManageButtons.init();
+   	//TableManageButtons.init();*/
             });
-	  function hapus(id) {
-		  swal({
+   function hapus(id) {
+    swal({
                 title: "Yakin Menghapus?",
                 text: "Data akan dihapus",
                 type: "error",
@@ -103,20 +112,41 @@
                 confirmButtonText: "Ya",
                 closeOnConfirm: false
             }, function () {
-				$.ajax({
-					url : "<?php echo site_url('deletepost')?>/"+id,
-					type: "POST",
-					dataType: "JSON",
-					success: function(data)
-					{
-						table.ajax.reload();
-					},
-					error: function (jqXHR, textStatus, errorThrown)
-					{
-						swal("Error", "", "error");
-					}
-				});
+   	$.ajax({
+   		url : "<?php echo site_url('deletepost')?>/"+id,
+   		type: "POST",
+   		dataType: "JSON",
+   		success: function(data)
+   		{
+   			location.reload();
+   		},
+   		error: function (jqXHR, textStatus, errorThrown)
+   		{
+   			swal("Error", "", "error");
+   		}
+   	});
                 swal("Sukses!", "", "success");
             });
-	  }
-        </script>
+   }
+        
+</script>
+<script>
+   var myVar;
+   $(window).on('load',function(){
+   	myVar = setInterval(alertFunc, 15 * 60 * 1000);
+   });
+   function alertFunc() {
+   	$.ajax({
+     type: "POST",
+     url: "<?php echo base_url('checkses')?>",
+     success: function(data){
+        if (data == 1) {
+   
+        } else {
+        	alert("Sesi Masuk Habis");
+   			window.location.href="<?php echo base_url();?>login";
+        }
+     }
+     });
+   }
+</script>

@@ -1,0 +1,2 @@
+assets/plugins/ckeditor/config.js
+localhost/web5 diganti url yg baru

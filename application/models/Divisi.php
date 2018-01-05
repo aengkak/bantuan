@@ -21,10 +21,27 @@ class Divisi extends CI_model {
 		$data = array('divisi' => $divisi, 'status' => $status);
 		$this->db->insert('divisi', $data);
 		$this->db->insert_id();
+		
+		date_default_timezone_set('Asia/Jakarta');
+		$date = date('Y-m-d H:i:s');
+		$user_id = $this->session->userdata('user_id');
+		$datalog = array('user_id' => $user_id, 'ket' => "Tambah Divisi"." ".$divisi, 'tgl' => $date);
+		$this->db->insert('log', $datalog);
+		$this->db->insert_id();
 	}
 	public function delete($id){
 		$this->db->where('id_divisi', $id);
 		$this->db->update('divisi', array('status' => "0"));
+		
+		$this->db->where('id_divisi', $id);
+		$ak = $this->db->get('divisi')->row();
+		
+		date_default_timezone_set('Asia/Jakarta');
+		$date = date('Y-m-d H:i:s');
+		$user_id = $this->session->userdata('user_id');
+		$datalog = array('user_id' => $user_id, 'ket' => "Delete Divisi"." ".$ak->divisi, 'tgl' => $date);
+		$this->db->insert('log', $datalog);
+		$this->db->insert_id();
 	}
 	public function edit($id){
 		$this->db->where('id_divisi', $id);
@@ -36,5 +53,16 @@ class Divisi extends CI_model {
 		$data = array('divisi' => $divisi);
 		$this->db->where('id_divisi', $id);
 		$this->db->update('divisi', $data);
+		
+		date_default_timezone_set('Asia/Jakarta');
+		$date = date('Y-m-d H:i:s');
+		$user_id = $this->session->userdata('user_id');
+		$datalog = array('user_id' => $user_id, 'ket' => "Update Divisi"." ".$divisi, 'tgl' => $date);
+		$this->db->insert('log', $datalog);
+		$this->db->insert_id();
+	}
+	public function pilih($id) {
+		$this->db->like('divisi', $id);
+		return $this->db->get('divisi')->row();
 	}
 }

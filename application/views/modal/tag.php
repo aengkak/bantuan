@@ -9,9 +9,13 @@
 		<label class="col-md-2 control-label">Kategori</label>
 		<div class="col-md-10">
 			<select class="form-control" name="kategori_id">
-			<?php foreach ($kategori as $key) {?>
-				<option value="<?php echo $key->id_kategori;?>"><?php echo $key->nama;?></option> 
-			<?php } ?>
+			<?php $sesdev = $this->session->userdata('divisi_id');
+			$resd = explode(',',$sesdev);
+			foreach ($kategori as $key) { 
+			foreach($resd as $keyresd => $valueresd) { 
+			if($valueresd == $key->divisi_id) { ?>
+				<option value="<?php echo $key->id_kategori;?>"><?php echo $key->nama." ~ ".$key->divisi;?></option> 
+			<?php } } } ?>
 			</select>
 		</div>
 	</div>
@@ -27,9 +31,13 @@
 		<label class="col-md-2 control-label">Kategori</label>
 		<div class="col-md-10">
 			<select class="form-control" name="kategori_id">
-			<?php foreach ($kategori as $key) {?>
-				<option <?php if ($key->id_kategori == $tag->kategori_id) echo 'selected = "selected"'; ?> value="<?php echo $key->id_kategori;?>"><?php echo $key->nama;?></option> 
-			<?php } ?>
+			<?php $sesdev = $this->session->userdata('divisi_id');
+			$resd = explode(',',$sesdev);
+			foreach ($kategori as $key) { 
+			foreach($resd as $keyresd => $valueresd) { 
+			if($valueresd == $key->divisi_id) { ?>
+				<option <?php if ($key->id_kategori == $tag->kategori_id) echo 'selected = "selected"'; ?> value="<?php echo $key->id_kategori;?>"><?php echo $key->nama." ~ ".$key->divisi;?></option> 
+			<?php } } } ?>
 			</select>
 		</div>
 	</div>

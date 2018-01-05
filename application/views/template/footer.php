@@ -100,5 +100,22 @@
 		}));
 	} 
 </script>
+<script>
+function divisi(val) {
+	$.get("<?php echo base_url();?>faq/"+val, function(data, status){
+            $("#pindah").html(data);
+     });
+}
+function pindah(val) {
+	$.get("<?php echo base_url();?>"+val, function(data, status){
+            $("#pindah").html(data);
+     });
+}
+function postingan(val) {
+	$.get("<?php echo base_url();?>editpostlg/"+val, function(data, status){
+            $("#pindah").html(data);
+     });
+}
+</script>
 </body>
 </html>

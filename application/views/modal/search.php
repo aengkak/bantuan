@@ -12,10 +12,24 @@
          </h4>
       </div>
       <div id="collapse<?php echo $no;?>" class="panel-collapse collapse <?php /*if($no == 1){ echo "in"; }*/?>">
-         <div class="panel-body"><?php echo str_ireplace($kata, '<span style="color: #1A8CF3;">'.$kata.'</span>', $key->isi); ?></div>
+         <div class="panel-body">
+		 <?php echo str_ireplace($kata, '<span style="color: #1A8CF3;">'.$kata.'</span>', $key->isi); ?>
+		 <?php
+							$cekd = $this->session->userdata('divisi_id');
+							$resd = explode(',',$cekd);
+							foreach($resd as $keyd => $valued) {
+								if($valued == $divisi->id_divisi) { ?>
+								<br><br>
+							<div class="col-md-11"></div>
+							<div class="col-md-1">
+							<a href="<?php echo base_url();?>editpost/<?php echo $key->id_post; ?>" class="btn btn-custom waves-effect waves-light m-b-5">Edit</a>
+							</div>
+							<?php break; }
+							} ?>
+		 </div>
       </div>
    </div>
-   <?php if($no == 10) { break; } $no++; } ?>
+   <?php if($no == 3) { break; } $no++; } ?>
 </div>
 <?php } else { echo "Tidak Ditemukan"; } ?>
 	
@@ -31,10 +45,29 @@
          </h4>
       </div>
       <div id="collapse<?php echo $no;?>" class="panel-collapse collapse <?php /*if($no == 1){ echo "in"; }*/?>">
-         <div class="panel-body"><?php echo $key->isi;?></div>
+         <div class="panel-body">
+			<?php echo $key->isi;?>
+			<?php
+							$cekd = $this->session->userdata('divisi_id');
+							$resd = explode(',',$cekd);
+							foreach($resd as $keyd => $valued) {
+								if($valued == $divisi->id_divisi) { ?>
+								<br><br>
+							<div class="col-md-11"></div>
+							<div class="col-md-1">
+							<a href="<?php echo base_url();?>editpost/<?php echo $key->id_post; ?>" class="btn btn-custom waves-effect waves-light m-b-5">Edit</a>
+							</div>
+							<?php break; }
+							} ?>
+		</div>
       </div>
    </div>
-   <?php if($no == 10) { break; } $no++; } ?>
+   <?php if($no == 3) { break; } $no++; } ?>
 </div>
 <?php } else { echo "Tidak Ditemukan"; } ?>
 <?php } ?>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("img").addClass("img-responsive");
+});
+</script>

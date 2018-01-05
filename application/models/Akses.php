@@ -21,11 +21,27 @@ class Akses extends CI_model {
 		$data = array('akses' => $akses, 'status' => $status);
 		$this->db->insert('akses', $data);
 		$this->db->insert_id();
-
+		
+		date_default_timezone_set('Asia/Jakarta');
+		$date = date('Y-m-d H:i:s');
+		$user_id = $this->session->userdata('user_id');
+		$datalog = array('user_id' => $user_id, 'ket' => "Tambah Akses"." ".$akses, 'tgl' => $date);
+		$this->db->insert('log', $datalog);
+		$this->db->insert_id();
 	}
-	public function delete($id){
+	public function delete($id) {
 		$this->db->where('id_akses', $id);
 		$this->db->update('akses', array('status' => "0"));
+		
+		$this->db->where('id_akses', $id);
+		$ak = $this->db->get('akses')->row();
+		
+		date_default_timezone_set('Asia/Jakarta');
+		$date = date('Y-m-d H:i:s');
+		$user_id = $this->session->userdata('user_id');
+		$datalog = array('user_id' => $user_id, 'ket' => "Delete Akses"." ".$ak->akses, 'tgl' => $date);
+		$this->db->insert('log', $datalog);
+		$this->db->insert_id();
 	}
 	public function edit($id){
 		$this->db->where('id_akses', $id);
@@ -37,5 +53,16 @@ class Akses extends CI_model {
 		$data = array('akses' => $akses);
 		$this->db->where('id_akses', $id);
 		$this->db->update('akses', $data);
+		
+		date_default_timezone_set('Asia/Jakarta');
+		$date = date('Y-m-d H:i:s');
+		$user_id = $this->session->userdata('user_id');
+		$datalog = array('user_id' => $user_id, 'ket' => "Update Akses"." ".$akses, 'tgl' => $date);
+		$this->db->insert('log', $datalog);
+		$this->db->insert_id();
+	}
+	public function cek($value){
+		$this->db->where('id_akses', $value);
+		return $this->db->get('akses')->row();
 	}
 }

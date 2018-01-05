@@ -12,6 +12,7 @@ class Login extends CI_model {
 						'user_id' => $cek->id_user,
 						'username' => $cek->username,
 						'akses_id' => $cek->akses_id,
+						'divisi_id' => $cek->divisi_id,
 						'status' => "login" );
 			$this->session->set_userdata($data_session);
 		}

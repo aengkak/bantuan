@@ -11,6 +11,7 @@ class Main extends CI_Controller {
 		$this->load->model('Post');
 		$this->load->model('Tag');
 		$this->load->model('Divisi');
+		$this->load->model('Aktivitas');
 	}
 	/**
 	 * Index Page for this controller.
@@ -35,27 +36,86 @@ class Main extends CI_Controller {
 		$this->load->view('index', $data);
 		$this->load->view('template/footer');
 	}
-	public function faq()
+	public function pilih() {
+		$data['divisi'] = $this->Divisi->selectAll();
+		$menu['akses'] = $this->Akses->selectAll();
+		$this->load->view('index', $data);
+	}
+	public function result($id = null)
 	{
+		if (null !== $id) {
+			} else {
+				redirect(base_url());
+		}
+		$id_divisi = $this->uri->segment('2');
 		if($_POST==NULL) {
+			
 			$arr = array();
-		$data1 = $this->Post->selectAll();
+		$data1 = $this->Post->divisi($id_divisi);
 		foreach ($data1 as $key1) {
 			$arr[] = array('value' => $key1->judul, 'label' => $key1->judul, 'addr' => $key1->nama, 'desc'=> "");
 		}
-		$data['kategori'] = $this->Kategori->selectAll();
-		$data['post'] = $this->Post->selectAll();
+		$data["linkpost"] = $id_divisi;
+		$data['kategori'] = $this->Kategori->divisi($id_divisi);
+		$data['post'] = $this->Post->divisi($id_divisi);
 		$data['res'] = json_encode($arr);
 		$data['tag'] = $this->Tag->selectAll();
+		$data['divisi'] = $this->Divisi->pilih($id_divisi);
 		$menu['akses'] = $this->Akses->selectAll();
 		$this->load->view('template/header');
 		$this->load->view('template/menu', $menu);
 		$this->load->view('faq', $data);
 		$this->load->view('template/footer');
 		} else {
-			$data['kata'] = $this->input->post('judul') ;
-			$data['cek'] = 1;
-			$data['post'] = $this->Post->search();
+			if($this->input->post('id') != NULL) {
+				$data['post'] = $this->Post->tag();
+				$data['divisi'] = $this->Divisi->pilih($id_divisi);
+				$data['cek'] = 0;
+			} else {
+				$data['kata'] = $this->input->post('judul') ;
+				$data['cek'] = 1;
+				$data['divisi'] = $this->Divisi->pilih($id_divisi);
+				$data['post'] = $this->Post->search($id_divisi);
+			}
+			$this->load->view('modal/search', $data);
+		}
+	}
+	public function faq($id = null)
+	{
+		if (null !== $id) {
+			} else {
+				redirect(base_url());
+		}
+		$id_divisi = $this->uri->segment('2');
+		if($_POST==NULL) {
+			
+			$arr = array();
+		$data1 = $this->Post->divisi($id_divisi);
+		foreach ($data1 as $key1) {
+			$arr[] = array('value' => $key1->judul, 'label' => $key1->judul, 'addr' => $key1->nama, 'desc'=> "");
+		}
+		$data["linkpost"] = $id_divisi;
+		$data['kategori'] = $this->Kategori->divisi($id_divisi);
+		$data['post'] = $this->Post->divisi($id_divisi);
+		$data['res'] = json_encode($arr);
+		$data['tag'] = $this->Tag->selectAll();
+		$data['divisi'] = $this->Divisi->pilih($id_divisi);
+		$menu['akses'] = $this->Akses->selectAll();
+		//$this->load->view('template/header');
+		//$this->load->view('template/menu', $menu);
+		$this->load->view('faq', $data);
+		//$this->load->view('template/footer');
+		} else {
+			if($this->input->post('id') != NULL) {
+				$data['post'] = $this->Post->tag();
+				$data['divisi'] = $this->Divisi->pilih($id_divisi);
+				$data['cek'] = 0;
+			} else {
+				$data['kata'] = $this->input->post('judul') ;
+				$data['cek'] = 1;
+				$data['divisi'] = $this->Divisi->pilih($id_divisi);
+				$data['post'] = $this->Post->search($id_divisi);
+			}
 			$this->load->view('modal/search', $data);
 		}
 	}
@@ -86,11 +146,24 @@ class Main extends CI_Controller {
 		redirect(base_url('login'));
 	}
 	public function user() {
+		$akses_id = $this->session->userdata('akses_id');
+		$res1 = explode(',',$akses_id);
+		foreach ($res1 as $key => $value) {
+			$cek = $this->Akses->cek($value);
+			if (strtolower($cek->akses) == "user") {
+				$count = $cek->akses;
+			}
+		}
+		$counting = count($count);
+		if ($counting > 0) {
 		$menu['akses'] = $this->Akses->selectAll();
-		$this->load->view('template/header');
-		$this->load->view('template/menu', $menu);
+		//$this->load->view('template/header');
+		//$this->load->view('template/menu', $menu);
 		$this->load->view('user');
-		$this->load->view('template/footer');
+		//$this->load->view('template/footer');
+		} else {
+			redirect(base_url());
+		}
 	}
 	function jsonuser(){
 		header('Content-Type: application/json');
@@ -100,6 +173,7 @@ class Main extends CI_Controller {
 	public function modaluser() {
 		$data['cek'] = 0;
 		$data['akses'] = $this->Akses->selectAll();
+		$data['divisi'] = $this->Divisi->selectAll();
 		$this->load->view('modal/user', $data);
 	}
 	public function adduser() {
@@ -109,6 +183,7 @@ class Main extends CI_Controller {
 	public function edituser($id) {
 		$data['cek'] = 1;
 		$data['akses'] = $this->Akses->selectAll();
+		$data['divisi'] = $this->Divisi->selectAll();
 		$data['user'] = $this->User->edit($id);
 		$this->load->view('modal/user', $data);
 	}
@@ -121,11 +196,24 @@ class Main extends CI_Controller {
 		echo json_encode(array("status" => TRUE));
 	}
 	public function kategori() {
+		$akses_id = $this->session->userdata('akses_id');
+		$res1 = explode(',',$akses_id);
+		foreach ($res1 as $key => $value) {
+			$cek = $this->Akses->cek($value);
+			if (strtolower($cek->akses) == "kategori") {
+				$count = $cek->akses;
+			}
+		}
+		$counting = count($count);
+		if ($counting > 0) {
 		$menu['akses'] = $this->Akses->selectAll();
-		$this->load->view('template/header');
-		$this->load->view('template/menu', $menu);
+		//$this->load->view('template/header');
+		//$this->load->view('template/menu', $menu);
 		$this->load->view('kategori');
-		$this->load->view('template/footer');
+		//$this->load->view('template/footer');
+		} else {
+			redirect(base_url());
+		}
 	}
 	function jsonkategori(){
 		header('Content-Type: application/json');
@@ -144,6 +232,7 @@ class Main extends CI_Controller {
 	public function editkategori($id) {
 		$data['cek'] = 1;
 		$data['kategori'] = $this->Kategori->edit($id);
+		$data['divisi'] = $this->Divisi->selectAll();
 		$this->load->view('modal/kategori', $data);
 	}
 	public function deletekategori($id) {
@@ -155,11 +244,24 @@ class Main extends CI_Controller {
 		echo json_encode(array("status" => TRUE));
 	}
 	public function akses() {
+		$akses_id = $this->session->userdata('akses_id');
+		$res1 = explode(',',$akses_id);
+		foreach ($res1 as $key => $value) {
+			$cek = $this->Akses->cek($value);
+			if (strtolower($cek->akses) == "akses") {
+				$count = $cek->akses;
+			}
+		}
+		$counting = count($count);
+		if ($counting > 0) {
 		$menu['akses'] = $this->Akses->selectAll();
-		$this->load->view('template/header');
-		$this->load->view('template/menu', $menu);
+		//$this->load->view('template/header');
+		//$this->load->view('template/menu', $menu);
 		$this->load->view('akses');
-		$this->load->view('template/footer');
+		//$this->load->view('template/footer');
+		} else {
+			redirect(base_url());
+		}
 	}
 	function jsonakses(){
 		header('Content-Type: application/json');
@@ -189,9 +291,18 @@ class Main extends CI_Controller {
 	}
 	public function post() {
 		$menu['akses'] = $this->Akses->selectAll();
+		$data['post'] = $this->Post->selectAll();
+		//$this->load->view('template/header');
+		//$this->load->view('template/menu', $menu);
+		$this->load->view('post', $data);
+		//$this->load->view('template/footer');
+	}
+	public function postingan() {
+		$menu['akses'] = $this->Akses->selectAll();
+		$data['post'] = $this->Post->selectAll();
 		$this->load->view('template/header');
 		$this->load->view('template/menu', $menu);
-		$this->load->view('post');
+		$this->load->view('post', $data);
 		$this->load->view('template/footer');
 	}
 	function jsonpost(){
@@ -201,33 +312,56 @@ class Main extends CI_Controller {
     }
 	public function addpost() {
 		if($_POST != NULL) {
-			$this->Post->add();
+			$data = $this->Post->add();
 			echo "<script>alert('Sukses')
-				location.replace('index')</script>";
+				location.replace('result/".$data."')</script>";
 		} else {
 			$data['kategori'] = $this->Kategori->selectAll();
 			$data['cek'] = 0;
 			$menu['akses'] = $this->Akses->selectAll();
-		$this->load->view('template/header');
-		$this->load->view('template/menu', $menu);
+			$this->load->view('template/header');
+			$this->load->view('template/menu', $menu);
 			$this->load->view('modal/post', $data);
 			$this->load->view('template/footer');
 		}
 	}
+	public function addpostlg() {
+		if($_POST != NULL) {
+			$data = $this->Post->add();
+			echo $data;
+		} else {
+			$data['kategori'] = $this->Kategori->selectAll();
+			$data['cek'] = 0;
+			$menu['akses'] = $this->Akses->selectAll();
+			$this->load->view('modal/post', $data);
+		}
+	}
 	public function editpost($id) {
 		if($_POST != NULL) {
-			$this->Post->update();
+			$data = $this->Post->update();
 			echo "<script>alert('Sukses')
-				location.replace('../index')</script>";
+				location.replace('../result/".$data."')</script>";
 		} else {
 			$data['cek'] = 1;
 			$data['kategori'] = $this->Kategori->selectAll();
 			$data['post'] = $this->Post->edit($id);
 			$menu['akses'] = $this->Akses->selectAll();
-		$this->load->view('template/header');
-		$this->load->view('template/menu', $menu);
+			$this->load->view('template/header');
+			$this->load->view('template/menu', $menu);
 			$this->load->view('modal/post', $data);
 			$this->load->view('template/footer');
+		}
+	}
+	public function editpostlg($id) {
+		if($_POST != NULL) {
+			$data = $this->Post->update();
+			echo $data;
+		} else {
+			$data['cek'] = 1;
+			$data['kategori'] = $this->Kategori->selectAll();
+			$data['post'] = $this->Post->edit($id);
+			$menu['akses'] = $this->Akses->selectAll();
+			$this->load->view('modal/post', $data);
 		}
 	}
 	public function deletepost($id) {
@@ -241,10 +375,10 @@ class Main extends CI_Controller {
 				$data['kategori'] = $this->Kategori->selectAll();
 				$data['post'] = $this->Post->selectAll();
 				$menu['akses'] = $this->Akses->selectAll();
-		$this->load->view('template/header');
-		$this->load->view('template/menu', $menu);
+				//$this->load->view('template/header');
+				//$this->load->view('template/menu', $menu);
 				$this->load->view('read', $data);
-				$this->load->view('template/footer');
+				//$this->load->view('template/footer');
 			} else {
 				redirect(base_url());
 			}
@@ -253,11 +387,24 @@ class Main extends CI_Controller {
 		}
 	}
 	public function penanda() {
+		$akses_id = $this->session->userdata('akses_id');
+		$res1 = explode(',',$akses_id);
+		foreach ($res1 as $key => $value) {
+			$cek = $this->Akses->cek($value);
+			if (strtolower($cek->akses) == "penanda") {
+				$count = $cek->akses;
+			}
+		}
+		$counting = count($count);
+		if ($counting > 0) {
 		$menu['akses'] = $this->Akses->selectAll();
-		$this->load->view('template/header');
-		$this->load->view('template/menu', $menu);
+		//$this->load->view('template/header');
+		//$this->load->view('template/menu', $menu);
 		$this->load->view('tag');
-		$this->load->view('template/footer');
+		//$this->load->view('template/footer');
+		} else {
+			redirect(base_url());
+		}
 	}
 	function jsontag(){
 		header('Content-Type: application/json');
@@ -290,6 +437,7 @@ class Main extends CI_Controller {
 	public function search() {
 		$data['cek'] = 0;
 		$data['post'] = $this->Post->judul();
+		$data['divisi'] = $this->Divisi->pilih($id_divisi);
 		$this->load->view('modal/search', $data);
 	}
 	public function posttag() {
@@ -304,8 +452,10 @@ class Main extends CI_Controller {
 		}
 	}
 	public function filtertag() {
+		$id_divisi = $this->input->post('id_divisi');
 		$data['cek'] = 0;
 		$data['post'] = $this->Post->tag();
+		$data['divisi'] = $this->Divisi->pilih($id_divisi);
 		$this->load->view('modal/search', $data);
 	}
 	public function cekpass() {
@@ -317,11 +467,24 @@ class Main extends CI_Controller {
 		echo json_encode(array("status" => TRUE));
 	}
 	public function divisi() {
+		$akses_id = $this->session->userdata('akses_id');
+		$res1 = explode(',',$akses_id);
+		foreach ($res1 as $key => $value) {
+			$cek = $this->Akses->cek($value);
+			if (strtolower($cek->akses) == "kategori") {
+				$count = $cek->akses;
+			}
+		}
+		$counting = count($count);
+		if ($counting > 0) {
 		$menu['akses'] = $this->Akses->selectAll();
-		$this->load->view('template/header');
-		$this->load->view('template/menu', $menu);
+		//$this->load->view('template/header');
+		//$this->load->view('template/menu', $menu);
 		$this->load->view('divisi');
-		$this->load->view('template/footer');
+		//$this->load->view('template/footer');
+		} else {
+			redirect(base_url());
+		}
 	}
 	function jsondivisi(){
 		header('Content-Type: application/json');
@@ -348,5 +511,38 @@ class Main extends CI_Controller {
 	public function updatedivisi() {
 		$this->Divisi->update();
 		echo json_encode(array("status" => TRUE));
+	}
+	public function aktivitas() {
+		$akses_id = $this->session->userdata('akses_id');
+		$res1 = explode(',',$akses_id);
+		foreach ($res1 as $key => $value) {
+			$cek = $this->Akses->cek($value);
+			if (strtolower($cek->akses) == "aktivitas") {
+				$count = $cek->akses;
+			}
+		}
+		$counting = count($count);
+		if ($counting > 0) {
+		$menu['akses'] = $this->Akses->selectAll();
+		//$this->load->view('template/header');
+		//$this->load->view('template/menu', $menu);
+		$this->load->view("aktivitas");
+		//$this->load->view('template/footer');
+		} else {
+			redirect(base_url());
+		}
+	}
+	function jsonaktivitas(){
+		header('Content-Type: application/json');
+        $data = $this->Aktivitas->json();
+		print_r($data);
+    }
+	public function checkses() {
+		$ses = $this->session->userdata('status');
+		if ($ses != "login") {
+			echo 0;
+		} else {
+			echo 1;
+		}
 	}
 }
