@@ -95,7 +95,7 @@
    simpan = 'tambah';
    $('#form')[0].reset(); // reset form on modals
    $('#myModal').modal('show'); // show bootstrap modal
-   $("#modalbody").load("modaltag/",function(data){
+   $("#modalbody").load("<?php echo base_url();?>modaltag/",function(data){
         $("#modalbody").html(data);
      });
    /*$("#form").on('submit',(function(e) {
